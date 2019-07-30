@@ -12,7 +12,6 @@
         <module>bsc-core</module>
         <module>bsc-flow</module>
         <module>bsc-flow-editor-eclipse</module>
-        <module>bsc-flow-editor-idea</module>
         <module>bsc-flow-default-starter</module>
     </modules>
 

@@ -16,6 +16,7 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="org.fs.bsc.flow.editor.BscFileTypeFactory"/>
     <fileEditorProvider implementation="org.fs.bsc.flow.editor.BscFlowEditorProvider"/>
     <!-- Add your extensions here -->
   </extensions>

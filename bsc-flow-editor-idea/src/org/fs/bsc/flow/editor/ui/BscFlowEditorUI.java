@@ -33,7 +33,13 @@ public class BscFlowEditorUI extends JPanel implements DesignerEditorPanelFacade
         add(splitter, "Center");
 
         JPanel contentPanel = new JPanel(new LightFillLayout());
-        contentPanel.add(new JLabel("BSC Test"));
+        JLabel toolbar = new JLabel();
+        toolbar.setVisible(false);
+        contentPanel.add(toolbar);
+
+        JLabel testLabel = new JLabel("BSC Test");
+        testLabel.setText("BSC Test");
+        contentPanel.add(testLabel);
         splitter.setInnerComponent(contentPanel);
     }
 

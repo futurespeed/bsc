@@ -27,12 +27,12 @@ public class BscFlowEditor extends UserDataHolderBase implements FileEditor, Pos
     public BscFlowEditor(@NotNull Project project, @NotNull VirtualFile virtualFile){
         VirtualFile vf = virtualFile instanceof LightVirtualFile ? ((LightVirtualFile)virtualFile).getOriginalFile() : virtualFile;
         Module module = ModuleUtilCore.findModuleForFile(vf, project);
-        if (module == null) {
-            throw new IllegalArgumentException("No module for file " + virtualFile + " in project " + project);
-        } else {
+//        if (module == null) {
+//            throw new IllegalArgumentException("No module for file " + virtualFile + " in project " + project);
+//        } else {
             this.file = virtualFile;
             this.ui = new BscFlowEditorUI(this, project, module, virtualFile);
-        }
+//        }
     }
 
     @NotNull

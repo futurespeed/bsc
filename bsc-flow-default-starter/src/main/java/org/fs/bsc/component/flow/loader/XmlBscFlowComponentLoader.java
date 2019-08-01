@@ -34,7 +34,7 @@ public class XmlBscFlowComponentLoader implements BscComponentLoader {
 	
 	private String scanPath = DEFAULT_SCAN_PATH;
 	
-	private String scanSuffix = ".bsc";
+	private String scanSuffix = ".bsf";
 
 	public void loadComponents(BscComponentProvider provider) {
 		try{
@@ -43,11 +43,11 @@ public class XmlBscFlowComponentLoader implements BscComponentLoader {
 			}
 			File dir = new File(scanPath);
 			if(null == dir || !dir.isDirectory()){
-				throw new RuntimeException("component dir[" + scanPath + "] not found");
+				throw new RuntimeException("Directory [" + scanPath + "] can not be found !");
 			}
 			loadComponentsByDir(dir, provider);
 		}catch(Exception e){
-			throw new BscException("加载BSC流程组件异常", e);
+			throw new BscException("Fail to load BSC Flows !", e);
 		}
 	}
 	
@@ -59,7 +59,7 @@ public class XmlBscFlowComponentLoader implements BscComponentLoader {
 				try{
 					loadComponentByFile(file, provider);
 				}catch(Exception e){
-					throw new BscException("加载XML异常：" + file.getAbsolutePath(), e);
+					throw new BscException("Fail to load BSC Flow ! file: " + file.getAbsolutePath(), e);
 				}
 			}
 		}

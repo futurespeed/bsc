@@ -53,7 +53,7 @@ public class DefaultBscExecuteManager implements BscExecuteManager {
 		try {
 			return expressionExecutor.execute(expression, context);
 		} catch (Exception e) {
-			throw new BscException("流程条件计算异常", e);
+			throw new BscException("Fail to execute expression [" + expression + "] !", e);
 		}
 	}
 

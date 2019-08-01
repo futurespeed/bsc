@@ -7,6 +7,7 @@ import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.fs.bsc.flow.editor.support.BscFileType;
 import org.jetbrains.annotations.NotNull;
 
 public class BscFlowEditorProvider implements FileEditorProvider, DumbAware {
@@ -15,7 +16,7 @@ public class BscFlowEditorProvider implements FileEditorProvider, DumbAware {
 
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        return "bsc".equals(virtualFile.getExtension());
+        return BscFileType.INSTANCE.getDefaultExtension().equals(virtualFile.getExtension());
     }
 
     @NotNull

@@ -27,7 +27,7 @@ public class BscFileType implements FileType {
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "bsc";
+        return "bsf";
     }
 
     @Nullable

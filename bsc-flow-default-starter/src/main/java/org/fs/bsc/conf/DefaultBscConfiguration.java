@@ -58,7 +58,7 @@ public class DefaultBscConfiguration implements BscConfiguration {
 		flowResolver.setBscServiceProvider(provider);
 		flowComponentLoader.setFlowResolver(flowResolver);
 		flowComponentLoader.setScanPath(BscInitParams.BASE_PATH + BscInitParams.getParam("BSC_FLOW_FILE_SCAN_PATH", "/flows"));
-		flowComponentLoader.setScanSuffix(BscInitParams.getParam("BSC_FLOW_FILE_SCAN_SUFFIX", ".bsc"));
+		flowComponentLoader.setScanSuffix(BscInitParams.getParam("BSC_FLOW_FILE_SCAN_SUFFIX", ".bsf"));
 		defaultBscComponentProvider.addComponentLoader(flowComponentLoader);
 		
 		defaultBscComponentProvider.loadComponents();

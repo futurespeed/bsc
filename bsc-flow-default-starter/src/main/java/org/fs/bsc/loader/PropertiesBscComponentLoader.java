@@ -22,7 +22,7 @@ public class PropertiesBscComponentLoader implements BscComponentLoader {
 					component.setCode(code);
 					provider.addComponent(code, component);
 				}else{
-					throw new BscException("Class [" + cls + "] is not extends BscComponent !");
+					throw new BscException("Class [" + cls + "] is not extended of BscComponent !");
 				}
 			}
 		}catch(Exception e){

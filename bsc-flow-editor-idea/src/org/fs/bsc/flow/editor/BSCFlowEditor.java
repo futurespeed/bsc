@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
+import org.fs.bsc.flow.editor.support.BscFileType;
 import org.fs.bsc.flow.editor.ui.BscFlowEditorUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +66,7 @@ public class BscFlowEditor extends UserDataHolderBase implements FileEditor, Pos
 
     @Override
     public boolean isValid() {
-        return "bsc".equals(file.getExtension());
+        return BscFileType.INSTANCE.getDefaultExtension().equals(file.getExtension());
     }
 
     @Override

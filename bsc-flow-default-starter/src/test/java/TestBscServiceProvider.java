@@ -73,7 +73,7 @@ public class TestBscServiceProvider {
 //		executerManager.execute("flow1", contextManager.newContext());
 		BscContext context = contextManager.newContext();
 		context.put("flowId", String.valueOf(System.currentTimeMillis()));
-		String componentCode = "flow2";
+		String componentCode = "flow1";
 		executerManager.execute(componentCode, context);
 		System.out.println(context);
 		BscComponent component = executerManager.getComponent(componentCode);

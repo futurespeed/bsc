@@ -16,17 +16,17 @@ import org.fs.bsc.flow.model.BscFlowDef;
 
 public class BscFlowCreatePage extends WizardNewFileCreationPage {
 	
-	private static final String DEFAULT_EXTENSION = "bsc";
+	private static final String DEFAULT_EXTENSION = "bsf";
 	
 	private IWorkbench workbench;
 
 	public BscFlowCreatePage(IWorkbench workbench, IStructuredSelection selection) {
-	    super("newBlFile", selection);
+	    super("newBsfFile", selection);
 	    this.workbench = workbench;
 
 	    setTitle("创建" + DEFAULT_EXTENSION + "文件");
 	    setDescription("创建一个新的" + DEFAULT_EXTENSION + "文件");
-	    setFileName("newBsc" + System.currentTimeMillis() + "." + DEFAULT_EXTENSION);
+	    setFileName("newBsf" + System.currentTimeMillis() + "." + DEFAULT_EXTENSION);
 	  }
 
 	@Override

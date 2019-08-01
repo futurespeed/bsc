@@ -8,6 +8,8 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -15,6 +17,7 @@ import com.intellij.openapi.ui.ThreeComponentsSplitter;
 import com.intellij.openapi.util.registry.Registry;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.fs.bsc.flow.editor.BscFlowEditor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -45,12 +48,22 @@ public class BscFlowEditorUI extends JPanel implements DesignerEditorPanelFacade
         toolbar.setVisible(false);
         contentPanel.add(toolbar);
 
-        JLabel testLabel = new JLabel("BSC Test");
-        testLabel.setText("BSC Test");
-        contentPanel.add(testLabel);
+        JTextArea codeArea = new JTextArea();
+        contentPanel.add(codeArea);
+
+
+
         splitter.setInnerComponent(contentPanel);
 
         this.document = FileDocumentManager.getInstance().getDocument(file);
+        document.addDocumentListener(new DocumentListener(){
+            @Override
+            public void documentChanged(@NotNull DocumentEvent event) {
+                refresh();
+            }
+        });
+
+        codeArea.setText(document.getText());
     }
 
     @Override
@@ -81,6 +94,7 @@ public class BscFlowEditorUI extends JPanel implements DesignerEditorPanelFacade
 
     public void refresh(){
         //TODO
+        String content = document.getText();
         //this.repaint();
     }
 

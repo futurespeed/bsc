@@ -1,11 +1,8 @@
 package org.fs.bsc.flow.editor.ui;
 
 import com.intellij.designer.DesignerEditorPanelFacade;
-import com.intellij.designer.LightFillLayout;
 import com.intellij.designer.ModuleProvider;
 import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -16,44 +13,96 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ThreeComponentsSplitter;
 import com.intellij.openapi.util.registry.Registry;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTabbedPane;
 import org.fs.bsc.flow.editor.BscFlowEditor;
+import org.fs.bsc.flow.editor.model.BscFlow;
+import org.fs.bsc.flow.editor.support.XmlBscFlowTransformer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.ByteArrayInputStream;
 
-public class BscFlowEditorUI extends JPanel implements DesignerEditorPanelFacade, DataProvider, ModuleProvider {
+public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvider {
 
     private static final Logger LOG = Logger.getInstance("#" + BscFlowEditorUI.class.getName());
 
-    private final ThreeComponentsSplitter splitter;
     private final Module module;
     private final Project project;
     private final VirtualFile file;
     private final Document document;
-    //private final DocumentListener myDocumentListener;
+
+    private final JTextField flowIdField;
+    private final JTextField flowNameField;
+    private final JTextArea flowDescArea;
+    private final JTextArea codeArea;
+    private final BscFlowDesignPanel designPanel;
+
+    private final BscFlow flow;
 
     public BscFlowEditorUI(BscFlowEditor editor, Project project, Module module, VirtualFile virtualFile){
         this.project = project;
         this.module = module;
         this.file = virtualFile;
-        splitter = new ThreeComponentsSplitter();
 
-        splitter.setDividerWidth(0);
-        splitter.setDividerMouseZoneSize(Registry.intValue("ide.splitter.mouseZone"));
-        add(splitter, "Center");
+        flowIdField = new JTextField();
+        flowIdField.setEditable(false);
+        flowNameField = new JTextField();
+        flowDescArea = new JTextArea();
+        flowDescArea.setLineWrap(true);
+        flowDescArea.setRows(100);
 
-        JPanel contentPanel = new JPanel(new LightFillLayout());
-        JLabel toolbar = new JLabel();
-        toolbar.setVisible(false);
-        contentPanel.add(toolbar);
+        codeArea = new JTextArea();
+        codeArea.setEditable(false);
 
-        JTextArea codeArea = new JTextArea();
-        contentPanel.add(codeArea);
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setSize( 300, 200);
+
+        JPanel infoIdPanel = new JPanel(new GridLayout(1, 2));
+        infoIdPanel.add(new JLabel("Flow ID"));
+        infoIdPanel.add(flowIdField);
+        infoPanel.add(infoIdPanel);
+
+        JPanel infoNamePanel = new JPanel(new GridLayout(1, 2));
+        infoNamePanel.add(new JLabel("Flow Name"));
+        infoNamePanel.add(flowNameField);
+        infoPanel.add(infoNamePanel);
+
+        JPanel infoDescPanel = new JPanel(new GridLayout(1, 2));
+        infoDescPanel.add(new JLabel("Flow Description"));
+        JScrollPane descScrollPane = new JBScrollPane(flowDescArea);
+        descScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        descScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        infoDescPanel.add(descScrollPane);
+        infoPanel.add(infoDescPanel);
+
+        JTabbedPane tabbedPane = new JBTabbedPane(JTabbedPane.BOTTOM);
+        JPanel infoWrapperPanel = new JPanel(new BorderLayout());
+        infoWrapperPanel.add(infoPanel, BorderLayout.CENTER);
+        tabbedPane.addTab("Information", infoWrapperPanel);
+        tabbedPane.addTab("Parameters", new JPanel());
 
 
+        designPanel = new BscFlowDesignPanel();
+        JScrollPane designWrapperPanel = new JBScrollPane(designPanel);
+        designWrapperPanel.setBorder(null);
+        designWrapperPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        designWrapperPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        tabbedPane.addTab("Flow Design", designWrapperPanel);
 
-        splitter.setInnerComponent(contentPanel);
+        JScrollPane codeWrapperPanel = new JBScrollPane(codeArea);
+        codeWrapperPanel.setBorder(null);
+        codeWrapperPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        codeWrapperPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        tabbedPane.addTab("Code Preview", codeWrapperPanel);
+
+        setLayout(new BorderLayout());
+        add(tabbedPane, BorderLayout.CENTER);
+
 
         this.document = FileDocumentManager.getInstance().getDocument(file);
         document.addDocumentListener(new DocumentListener(){
@@ -63,12 +112,10 @@ public class BscFlowEditorUI extends JPanel implements DesignerEditorPanelFacade
             }
         });
 
-        codeArea.setText(document.getText());
-    }
+        this.flow = readFlow(this.document);
+        designPanel.setFlow(this.flow);
 
-    @Override
-    public ThreeComponentsSplitter getContentSplitter() {
-        return splitter;
+        refresh();
     }
 
     @Override
@@ -88,6 +135,14 @@ public class BscFlowEditorUI extends JPanel implements DesignerEditorPanelFacade
         return null;
     }
 
+    public BscFlow readFlow(Document document){
+        try {
+            return XmlBscFlowTransformer.toBscFlow(new ByteArrayInputStream(document.getText().getBytes("UTF-8")));
+        }catch (Exception e){
+            throw new IllegalArgumentException("Fail to read BSC Flow file !", e);
+        }
+    }
+
     public void refreshAndSave(){
         //TODO
     }
@@ -95,6 +150,9 @@ public class BscFlowEditorUI extends JPanel implements DesignerEditorPanelFacade
     public void refresh(){
         //TODO
         String content = document.getText();
+
+        codeArea.setText(content);
+        designPanel.refresh();
         //this.repaint();
     }
 

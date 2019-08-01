@@ -11,6 +11,8 @@ public class BscFlow {
 	private List<BscFlowEndAction> endActions;
 	private List<BscField> inputFields;
 	private List<BscField> outputFields;
+	private DisplayInfo display;
+
 	public String getCode() {
 		return code;
 	}
@@ -59,6 +61,14 @@ public class BscFlow {
 	public void setOutputFields(List<BscField> outputFields) {
 		this.outputFields = outputFields;
 	}
+	public DisplayInfo getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(DisplayInfo display) {
+		this.display = display;
+	}
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "[" + getCode() + "]";

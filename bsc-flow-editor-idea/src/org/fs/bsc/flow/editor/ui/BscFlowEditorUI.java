@@ -1,6 +1,5 @@
 package org.fs.bsc.flow.editor.ui;
 
-import com.intellij.designer.DesignerEditorPanelFacade;
 import com.intellij.designer.ModuleProvider;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.diagnostic.Logger;
@@ -10,10 +9,7 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.ThreeComponentsSplitter;
-import com.intellij.openapi.util.registry.Registry;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import org.fs.bsc.flow.editor.BscFlowEditor;
@@ -35,7 +31,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
     private final VirtualFile file;
     private final Document document;
 
-    private final JTextField flowIdField;
+    private final JTextField flowCodeField;
     private final JTextField flowNameField;
     private final JTextArea flowDescArea;
     private final JTextArea codeArea;
@@ -43,13 +39,13 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
     private final BscFlow flow;
 
-    public BscFlowEditorUI(BscFlowEditor editor, Project project, Module module, VirtualFile virtualFile){
+    public BscFlowEditorUI(BscFlowEditor editor, Project project, Module module, VirtualFile virtualFile) {
         this.project = project;
         this.module = module;
         this.file = virtualFile;
 
-        flowIdField = new JTextField();
-        flowIdField.setEditable(false);
+        flowCodeField = new JTextField();
+        flowCodeField.setEditable(false);
         flowNameField = new JTextField();
         flowDescArea = new JTextArea();
         flowDescArea.setLineWrap(true);
@@ -60,11 +56,11 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setSize( 300, 200);
+        infoPanel.setSize(300, 200);
 
         JPanel infoIdPanel = new JPanel(new GridLayout(1, 2));
-        infoIdPanel.add(new JLabel("Flow ID"));
-        infoIdPanel.add(flowIdField);
+        infoIdPanel.add(new JLabel("Flow Code"));
+        infoIdPanel.add(flowCodeField);
         infoPanel.add(infoIdPanel);
 
         JPanel infoNamePanel = new JPanel(new GridLayout(1, 2));
@@ -105,7 +101,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
 
         this.document = FileDocumentManager.getInstance().getDocument(file);
-        document.addDocumentListener(new DocumentListener(){
+        document.addDocumentListener(new DocumentListener() {
             @Override
             public void documentChanged(@NotNull DocumentEvent event) {
                 refresh();
@@ -135,28 +131,30 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         return null;
     }
 
-    public BscFlow readFlow(Document document){
+    public BscFlow readFlow(Document document) {
         try {
             return XmlBscFlowTransformer.toBscFlow(new ByteArrayInputStream(document.getText().getBytes("UTF-8")));
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new IllegalArgumentException("Fail to read BSC Flow file !", e);
         }
     }
 
-    public void refreshAndSave(){
+    public void refreshAndSave() {
         //TODO
     }
 
-    public void refresh(){
+    public void refresh() {
         //TODO
         String content = document.getText();
 
+        flowCodeField.setText(flow.getCode());
+        flowNameField.setText(flow.getName());
+        flowDescArea.setText(flow.getDesc());
         codeArea.setText(content);
         designPanel.refresh();
-        //this.repaint();
     }
 
-    public void save(){
+    public void save() {
         //TODO
 //        LOG.debug("save(): group ID=" + this.myNextSaveGroupId);
 //        CommandProcessor.getInstance().executeCommand(this.getProject(), () -> {

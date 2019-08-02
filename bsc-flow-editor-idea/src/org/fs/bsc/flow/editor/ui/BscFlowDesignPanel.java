@@ -5,53 +5,52 @@ import org.fs.bsc.flow.editor.model.BscFlowAction;
 import org.fs.bsc.flow.editor.model.DisplayInfo;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
+import java.awt.*;
 
 public class BscFlowDesignPanel extends JPanel {
 
     private BscFlow flow;
 
-    public BscFlowDesignPanel(){
+    public BscFlowDesignPanel() {
         setLayout(null);
     }
 
-    public void refresh(){
+    public void refresh() {
         removeAll();
 
         DisplayInfo defaultDisplayInfo = new DisplayInfo();
+        defaultDisplayInfo.setHeight(80);
+        defaultDisplayInfo.setWidth(30);
 
-        if(flow.getStartAction() != null) {
+        if (flow.getStartAction() != null) {
             BscFlowAction action = flow.getStartAction();
-            if(null == action.getDisplay()){
+            if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
             }
-            JLabel label = new JLabel("Start");
-            label.setBorder(LineBorder.createGrayLineBorder());
-            label.setLocation(action.getDisplay().getX(), action.getDisplay().getY());
-            label.setSize(action.getDisplay().getWidth(), action.getDisplay().getHeight());
-            add(label);
+            BscFlowActionPart actionPart = new BscFlowActionPart("Start",
+                    new Point(action.getDisplay().getX(), action.getDisplay().getY()),
+                    new Dimension(action.getDisplay().getWidth(), action.getDisplay().getHeight()));
+            add(actionPart);
         }
 
-        for(BscFlowAction action : flow.getActions()){
-            if(null == action.getDisplay()){
+        for (BscFlowAction action : flow.getActions()) {
+            if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
             }
-            JLabel label = new JLabel(action.getName());
-            label.setBorder(LineBorder.createGrayLineBorder());
-            label.setLocation(action.getDisplay().getX(), action.getDisplay().getY());
-            label.setSize(action.getDisplay().getWidth(), action.getDisplay().getHeight());
-            add(label);
+            BscFlowActionPart actionPart = new BscFlowActionPart(action.getName(),
+                    new Point(action.getDisplay().getX(), action.getDisplay().getY()),
+                    new Dimension(action.getDisplay().getWidth(), action.getDisplay().getHeight()));
+            add(actionPart);
         }
 
-        for(BscFlowAction action : flow.getEndActions()){
-            if(null == action.getDisplay()){
+        for (BscFlowAction action : flow.getEndActions()) {
+            if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
             }
-            JLabel label = new JLabel("End");
-            label.setBorder(LineBorder.createGrayLineBorder());
-            label.setLocation(action.getDisplay().getX(), action.getDisplay().getY());
-            label.setSize(action.getDisplay().getWidth(), action.getDisplay().getHeight());
-            add(label);
+            BscFlowActionPart actionPart = new BscFlowActionPart("End",
+                    new Point(action.getDisplay().getX(), action.getDisplay().getY()),
+                    new Dimension(action.getDisplay().getWidth(), action.getDisplay().getHeight()));
+            add(actionPart);
         }
     }
 

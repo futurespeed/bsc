@@ -4,30 +4,30 @@ import org.fs.bsc.component.AbstractBscComponent;
 import org.fs.bsc.context.BscContext;
 
 public class BscFlowComponent extends AbstractBscComponent {
-	
-	private BscFlowResolver flowResolver;
-	
-	private BscFlow flow;
 
-	public String execute(BscContext context) {
-		String result = null;
-		result = flowResolver.executeFlow(this, context);
-		return result;
-	}
+    private BscFlowResolver flowResolver;
 
-	public BscFlowResolver getFlowResolver() {
-		return flowResolver;
-	}
+    private BscFlow flow;
 
-	public void setFlowResolver(BscFlowResolver flowResolver) {
-		this.flowResolver = flowResolver;
-	}
+    public String execute(BscContext context) {
+        String result = null;
+        result = flowResolver.executeFlow(this, context);
+        return result;
+    }
 
-	public BscFlow getFlow() {
-		return flow;
-	}
+    public BscFlowResolver getFlowResolver() {
+        return flowResolver;
+    }
 
-	public void setFlow(BscFlow flow) {
-		this.flow = flow;
-	}
+    public void setFlowResolver(BscFlowResolver flowResolver) {
+        this.flowResolver = flowResolver;
+    }
+
+    public BscFlow getFlow() {
+        return flow;
+    }
+
+    public void setFlow(BscFlow flow) {
+        this.flow = flow;
+    }
 }

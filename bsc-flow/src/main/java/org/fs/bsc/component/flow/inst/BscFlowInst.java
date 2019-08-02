@@ -6,50 +6,51 @@ import org.fs.bsc.component.flow.BscFlowResolver;
 import org.fs.bsc.context.BscContext;
 
 public class BscFlowInst {
-	private BscFlow flow;
-	private BscContext context;
-	private BscFlowAction currentAction;
-	private BscFlowResolver flowResolver;
-	public String init(){
-		//TODO flow init
-		return null;
-	}
-	
-	public String forward(BscFlowAction action){
-		currentAction = action;
-		return flowResolver.executeAction(flow, this, currentAction, context);
-	}
-	
-	public String destroy(){
-		//TODO flow destroy
-		return null;
-	}
+    private BscFlow flow;
+    private BscContext context;
+    private BscFlowAction currentAction;
+    private BscFlowResolver flowResolver;
 
-	public BscFlow getFlow() {
-		return flow;
-	}
+    public String init() {
+        //TODO flow init
+        return null;
+    }
 
-	public void setFlow(BscFlow flow) {
-		this.flow = flow;
-	}
+    public String forward(BscFlowAction action) {
+        currentAction = action;
+        return flowResolver.executeAction(flow, this, currentAction, context);
+    }
 
-	public BscContext getContext() {
-		return context;
-	}
+    public String destroy() {
+        //TODO flow destroy
+        return null;
+    }
 
-	public void setContext(BscContext context) {
-		this.context = context;
-	}
+    public BscFlow getFlow() {
+        return flow;
+    }
 
-	public BscFlowAction getCurrentAction() {
-		return currentAction;
-	}
+    public void setFlow(BscFlow flow) {
+        this.flow = flow;
+    }
 
-	public BscFlowResolver getFlowResolver() {
-		return flowResolver;
-	}
+    public BscContext getContext() {
+        return context;
+    }
 
-	public void setFlowResolver(BscFlowResolver flowResolver) {
-		this.flowResolver = flowResolver;
-	}
+    public void setContext(BscContext context) {
+        this.context = context;
+    }
+
+    public BscFlowAction getCurrentAction() {
+        return currentAction;
+    }
+
+    public BscFlowResolver getFlowResolver() {
+        return flowResolver;
+    }
+
+    public void setFlowResolver(BscFlowResolver flowResolver) {
+        this.flowResolver = flowResolver;
+    }
 }

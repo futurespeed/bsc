@@ -135,6 +135,14 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable {
         setSize(size);
     }
 
+    public Point getNewPosition() {
+        return newPosition;
+    }
+
+    public Point getPosition() {
+        return position;
+    }
+
     public static void main(String[] args) {
 
         JPanel panel = new JPanel(null);

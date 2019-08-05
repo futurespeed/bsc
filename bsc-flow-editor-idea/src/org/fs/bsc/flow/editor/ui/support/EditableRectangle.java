@@ -34,7 +34,7 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                if(enableResize) {
+                if (enableResize) {
                     hover = true;
                     repaint();
                 }
@@ -42,7 +42,7 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if(enableResize) {
+                if (enableResize) {
                     hover = false;
                     repaint();
                 }
@@ -141,18 +141,5 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable {
 
     public Point getPosition() {
         return position;
-    }
-
-    public static void main(String[] args) {
-
-        JPanel panel = new JPanel(null);
-        EditableRectangle rect = new EditableRectangle(new Point(12, 13), new Dimension(80, 30), true);
-        panel.add(rect);
-
-        JFrame frame = new JFrame();
-        frame.setSize(600, 400);
-        frame.getContentPane().add(panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
 }

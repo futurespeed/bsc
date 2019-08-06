@@ -49,6 +49,14 @@ public class Connector extends JPanel {
         repaint();
     }
 
+    public Point getStart() {
+        return start;
+    }
+
+    public Point getEnd() {
+        return end;
+    }
+
     public static class Arrow {
         private final Point p0 = new Point(0, 0);
         private final Point p1 = new Point(-1, 1);

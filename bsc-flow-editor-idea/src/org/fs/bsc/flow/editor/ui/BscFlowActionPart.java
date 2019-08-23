@@ -1,11 +1,10 @@
 package org.fs.bsc.flow.editor.ui;
 
 import org.fs.bsc.flow.editor.model.BscFlowAction;
-import org.fs.bsc.flow.editor.model.BscFlowDirection;
-import org.fs.bsc.flow.editor.model.DisplayInfo;
 import org.fs.bsc.flow.editor.ui.support.Connector;
 import org.fs.bsc.flow.editor.ui.support.EditableRectangle;
 import org.fs.bsc.flow.editor.ui.support.RectangleMovingShadow;
+import org.fs.bsc.flow.editor.ui.support.RectangleUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,20 +16,23 @@ public class BscFlowActionPart extends EditableRectangle {
 
     private JLabel nameLabel;
 
-    private java.util.List<Connector> connectors;
+    private java.util.List<Connector> sourceConnectors;
 
-    public BscFlowActionPart(String name, Point position, Dimension size){
+    private java.util.List<Connector> targetConnectors;
+
+    public BscFlowActionPart(String name, Point position, Dimension size) {
         super(position, size, false);
         nameLabel = new JLabel(name);
         add(nameLabel);
         setBackground(Color.YELLOW);
-        connectors = new ArrayList<>();
+        sourceConnectors = new ArrayList<>();
+        targetConnectors = new ArrayList<>();
     }
 
     @Override
     public void drawStart(Point point) {
         super.drawStart(point);
-        if(getParent() instanceof BscFlowDesignPanel){
+        if (getParent() instanceof BscFlowDesignPanel) {
             RectangleMovingShadow movingShadow = ((BscFlowDesignPanel) getParent()).getMovingShadow();
             movingShadow.setSize(getSize());
             movingShadow.setLocation(getPosition());
@@ -42,28 +44,39 @@ public class BscFlowActionPart extends EditableRectangle {
     @Override
     public void drawStop(Point point) {
         super.drawStop(point);
-        if(getParent() instanceof BscFlowDesignPanel){
+        if (getParent() instanceof BscFlowDesignPanel) {
             RectangleMovingShadow movingShadow = ((BscFlowDesignPanel) getParent()).getMovingShadow();
             movingShadow.hide();
             setVisible(true);
         }
         action.getDisplay().setX(getPosition().x);
         action.getDisplay().setY(getPosition().y);
-        for(Connector connector : connectors){
-            connector.connect(getPosition(), connector.getEnd());
+
+        for (Connector connector : sourceConnectors) {
+            connector.connect(connector.getStart(),
+                    RectangleUtils.getConnectPoint(getPosition(), getSize(), connector.getStart()));
+        }
+        for (Connector connector : targetConnectors) {
+            connector.connect(RectangleUtils.getMiddlePoint(getPosition(), getSize()),
+                    connector.getEnd());
         }
     }
 
     @Override
     public void drawMove(Point point) {
         super.drawMove(point);
-        if(getParent() instanceof BscFlowDesignPanel){
+        if (getParent() instanceof BscFlowDesignPanel) {
             RectangleMovingShadow movingShadow = ((BscFlowDesignPanel) getParent()).getMovingShadow();
             movingShadow.setLocation(getNewPosition(), false);
             movingShadow.go();
         }
-        for(Connector connector : connectors){
-            connector.connect(getNewPosition(), connector.getEnd());
+        for (Connector connector : sourceConnectors) {
+            connector.connect(connector.getStart(),
+                    RectangleUtils.getConnectPoint(getNewPosition(), getSize(), connector.getStart()));
+        }
+        for (Connector connector : targetConnectors) {
+            connector.connect(RectangleUtils.getMiddlePoint(getNewPosition(), getSize()),
+                    connector.getEnd());
         }
     }
 
@@ -75,12 +88,11 @@ public class BscFlowActionPart extends EditableRectangle {
         return action;
     }
 
-    public void addDirection(BscFlowDirection direction){
-        Connector connector = new Connector();
-        DisplayInfo targetActionDisplay = direction.getTargetAction().getDisplay();
-        Point to = new Point(targetActionDisplay.getX(), targetActionDisplay.getY());
-        connector.connect(getPosition(), to);
-        connectors.add(connector);
-        getParent().add(connector);
+    public void addSourceConnector(Connector connector) {
+        sourceConnectors.add(connector);
+    }
+
+    public void addTargetConnector(Connector connector) {
+        targetConnectors.add(connector);
     }
 }

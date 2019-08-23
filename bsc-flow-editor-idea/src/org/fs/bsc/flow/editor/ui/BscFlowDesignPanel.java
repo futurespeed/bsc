@@ -4,7 +4,9 @@ import org.fs.bsc.flow.editor.model.BscFlow;
 import org.fs.bsc.flow.editor.model.BscFlowAction;
 import org.fs.bsc.flow.editor.model.BscFlowDirection;
 import org.fs.bsc.flow.editor.model.DisplayInfo;
+import org.fs.bsc.flow.editor.ui.support.Connector;
 import org.fs.bsc.flow.editor.ui.support.RectangleMovingShadow;
+import org.fs.bsc.flow.editor.ui.support.RectangleUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,6 +36,7 @@ public class BscFlowDesignPanel extends JPanel {
         movingShadow = new RectangleMovingShadow();
         add(movingShadow.getPanel());
 
+        // start action
         if (flow.getStartAction() != null) {
             BscFlowAction action = flow.getStartAction();
             if (null == action.getDisplay()) {
@@ -47,6 +50,7 @@ public class BscFlowDesignPanel extends JPanel {
             actionPartMap.put(action.getCode(), actionPart);
         }
 
+        // end actions
         for (BscFlowAction action : flow.getActions()) {
             if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
@@ -59,6 +63,7 @@ public class BscFlowDesignPanel extends JPanel {
             actionPartMap.put(action.getCode(), actionPart);
         }
 
+        // actions
         for (BscFlowAction action : flow.getEndActions()) {
             if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
@@ -72,12 +77,25 @@ public class BscFlowDesignPanel extends JPanel {
         }
 
         // add connection
-        for(Map.Entry<String, BscFlowActionPart> entry : actionPartMap.entrySet()){
+        for (Map.Entry<String, BscFlowActionPart> entry : actionPartMap.entrySet()) {
             BscFlowActionPart part = entry.getValue();
             java.util.List<BscFlowDirection> directionList = part.getAction().getDirections();
             if (directionList != null && !directionList.isEmpty()) {
                 for (BscFlowDirection direction : directionList) {
-                    part.addDirection(direction);
+                    BscFlowAction targetAction = direction.getTargetAction();
+                    BscFlowActionPart targetPart = actionPartMap.get(targetAction.getCode());
+                    DisplayInfo targetActionDisplay = targetAction.getDisplay();
+
+                    Point to = new Point(targetActionDisplay.getX(), targetActionDisplay.getY());
+                    Connector connector = new Connector();
+//                    connector.connect(part.getPosition(), to);
+//                    connector.connect(RectangleUtils.getConnectPoint(part.getPosition(), part.getSize(), to),
+//                            RectangleUtils.getConnectPoint(targetPart.getPosition(), targetPart.getSize(), part.getPosition()));
+                    connector.connect(RectangleUtils.getMiddlePoint(part.getPosition(), part.getSize()),
+                            RectangleUtils.getConnectPoint(targetPart.getPosition(), targetPart.getSize(), part.getPosition()));
+                    add(connector);
+                    part.addTargetConnector(connector);
+                    targetPart.addSourceConnector(connector);
                 }
             }
         }

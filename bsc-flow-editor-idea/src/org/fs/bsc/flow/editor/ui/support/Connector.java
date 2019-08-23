@@ -13,7 +13,7 @@ public class Connector extends JPanel {
     private int arrowSize = 6;
 
     public Connector() {
-//        setBackground(Color.YELLOW);
+        setBackground(new Color(0, 0, 0, 0));
     }
 
     @Override
@@ -24,13 +24,18 @@ public class Connector extends JPanel {
 
         // Arrow
         Point relateEndPoint = new Point(end.x - getX(), end.y - getY());
-        double gradient = Double.valueOf(end.y - start.y) / Double.valueOf(end.x - start.x);
+        double dx = Double.valueOf(end.x - start.x);
+        if (0 == dx) {
+            dx = 1;
+        }
+        double gradient = Double.valueOf(end.y - start.y) / dx;
         Arrow arrow = new Arrow();
         arrow.setScale(arrowSize);
-        arrow.setRotation(Math.atan(gradient));
         if (end.x < start.x) {
             // add 180 degrees
             arrow.setRotation(Math.toRadians(Math.toDegrees(Math.atan(gradient)) + 180));
+        } else {
+            arrow.setRotation(Math.atan(gradient));
         }
         arrow.setTranslation(relateEndPoint.x, relateEndPoint.y);
         List<Point> points = arrow.getPoints();

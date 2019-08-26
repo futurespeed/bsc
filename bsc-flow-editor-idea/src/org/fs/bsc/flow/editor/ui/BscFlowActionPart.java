@@ -44,13 +44,21 @@ public class BscFlowActionPart extends EditableRectangle {
     @Override
     public void drawStop(Point point) {
         super.drawStop(point);
-        if (getParent() instanceof BscFlowDesignPanel) {
-            RectangleMovingShadow movingShadow = ((BscFlowDesignPanel) getParent()).getMovingShadow();
-            movingShadow.hide();
-            setVisible(true);
-        }
+
         action.getDisplay().setX(getPosition().x);
         action.getDisplay().setY(getPosition().y);
+
+        if (getParent() instanceof BscFlowDesignPanel) {
+            BscFlowDesignPanel designPanel = (BscFlowDesignPanel) getParent();
+            RectangleMovingShadow movingShadow = designPanel.getMovingShadow();
+            movingShadow.hide();
+            setVisible(true);
+
+            //FIXME
+            BscFlowEditorUI ui = (BscFlowEditorUI) getParent().getParent().getParent().getParent().getParent();
+            ui.save();
+        }
+
 
         for (Connector connector : sourceConnectors) {
             connector.connect(connector.getStart(),

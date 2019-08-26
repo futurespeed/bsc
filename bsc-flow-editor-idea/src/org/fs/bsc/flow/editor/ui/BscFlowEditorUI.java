@@ -2,6 +2,8 @@ package org.fs.bsc.flow.editor.ui;
 
 import com.intellij.designer.ModuleProvider;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -21,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 
 public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvider {
 
@@ -155,34 +159,20 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
     }
 
     public void save() {
-        //TODO
-//        LOG.debug("save(): group ID=" + this.myNextSaveGroupId);
-//        CommandProcessor.getInstance().executeCommand(this.getProject(), () -> {
-//            ApplicationManager.getApplication().runWriteAction(() -> {
-//                this.myInsideChange = true;
-//
-//                try {
-//                    BscFlowWriter writer = new BscFlowWriter();
-//                    this.getRootContainer().write(writer);
-//                    String newText = writer.getText();
-//                    String oldText = this.document.getText();
-//
-//                    try {
-//                        GuiEditor.ReplaceInfo replaceInfo = findFragmentToChange(oldText, newText);
-//                        if (replaceInfo.getStartOffset() != -1) {
-//                            this.document.replaceString(replaceInfo.getStartOffset(), replaceInfo.getEndOffset(), replaceInfo.getReplacement());
-//                        }
-//                    } catch (Exception var8) {
-//                        LOG.error(var8);
-//                        this.document.replaceString(0, oldText.length(), newText);
-//                    }
-//                } finally {
-//                    this.myInsideChange = false;
-//                }
-//
-//            });
-//        }, "UI Designer Save", this.myNextSaveGroupId);
-//        this.myNextSaveGroupId = new Object();
-//        this.fireHierarchyChanged();
+        CommandProcessor.getInstance().executeCommand(this.getProject(), () -> {
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                XmlBscFlowTransformer.toXML(flow, out);
+                String oldText = document.getText();
+                String newText;
+                try {
+                    newText = new String(out.toByteArray(), "UTF-8");
+                    newText = newText.replaceAll("\\r", "");
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalArgumentException(e);
+                }
+                document.replaceString(0, oldText.length(), newText);
+            });
+        }, "BSC Flow Save", new Object());
     }
 }

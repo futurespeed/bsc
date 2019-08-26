@@ -163,7 +163,6 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
             ApplicationManager.getApplication().runWriteAction(() -> {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 XmlBscFlowTransformer.toXML(flow, out);
-                String oldText = document.getText();
                 String newText;
                 try {
                     newText = new String(out.toByteArray(), "UTF-8");
@@ -171,7 +170,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
                 } catch (UnsupportedEncodingException e) {
                     throw new IllegalArgumentException(e);
                 }
-                document.replaceString(0, oldText.length(), newText);
+                document.setText(newText);
             });
         }, "BSC Flow Save", new Object());
     }

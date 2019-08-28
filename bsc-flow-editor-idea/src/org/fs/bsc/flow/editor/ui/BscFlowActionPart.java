@@ -55,7 +55,7 @@ public class BscFlowActionPart extends EditableRectangle {
             setVisible(true);
 
             //FIXME
-            BscFlowEditorUI ui = (BscFlowEditorUI) getParent().getParent().getParent().getParent().getParent();
+            BscFlowEditorUI ui = (BscFlowEditorUI) getParent().getParent().getParent().getParent();
             ui.save();
         }
 

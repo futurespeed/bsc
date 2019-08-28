@@ -1,5 +1,6 @@
 package org.fs.bsc.flow.editor.test;
 
+import com.intellij.ui.components.JBScrollPane;
 import org.fs.bsc.flow.editor.ui.support.Connector;
 import org.fs.bsc.flow.editor.ui.support.EditableRectangle;
 
@@ -26,9 +27,11 @@ public class TestFrame {
         });
         panel.add(rect);
 
+        JScrollPane scrollPane = new JBScrollPane(new JLabel("sdfdsf"));
+
         JFrame frame = new JFrame();
         frame.setSize(600, 400);
-        frame.getContentPane().add(panel);
+        frame.getContentPane().add(scrollPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

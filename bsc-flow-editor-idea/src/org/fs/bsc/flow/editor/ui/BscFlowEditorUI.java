@@ -1,6 +1,7 @@
 package org.fs.bsc.flow.editor.ui;
 
 import com.intellij.designer.ModuleProvider;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
@@ -11,12 +12,15 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import org.fs.bsc.flow.editor.BscFlowEditor;
 import org.fs.bsc.flow.editor.model.BscFlow;
 import org.fs.bsc.flow.editor.support.XmlBscFlowTransformer;
+import org.fs.bsc.flow.editor.ui.tools.GroupPanel;
+import org.fs.bsc.flow.editor.ui.tools.IconLabel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +29,9 @@ import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvider {
 
@@ -40,6 +47,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
     private final JTextArea flowDescArea;
     private final JTextArea codeArea;
     private final BscFlowDesignPanel designPanel;
+    private final GroupPanel groupPanel;
 
     private final BscFlow flow;
 
@@ -86,12 +94,42 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         tabbedPane.addTab("Information", infoWrapperPanel);
         tabbedPane.addTab("Parameters", new JPanel());
 
-
+        JPanel designWrapperPanel = new JPanel();
+        designWrapperPanel.setLayout(new BorderLayout());
         designPanel = new BscFlowDesignPanel();
-        JScrollPane designWrapperPanel = new JBScrollPane(designPanel);
-        designWrapperPanel.setBorder(null);
-        designWrapperPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        designWrapperPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        designWrapperPanel.add(designPanel, BorderLayout.CENTER);
+
+
+        java.util.List<GroupPanel.TogglePanel> groups = new ArrayList<>();
+        List<IconLabel> baseGroupItems = new ArrayList<>();
+        baseGroupItems.add(new IconLabel(AllIcons.General.Mouse, "select", "选择", code -> {
+            Messages.showMessageDialog(code,"Sample", Messages.getInformationIcon());
+        }));
+        baseGroupItems.add(new IconLabel(AllIcons.General.Locate, "connect", "连接", code -> {
+            Messages.showMessageDialog(code,"Sample", Messages.getInformationIcon());
+        }));
+        GroupPanel.TogglePanel baseGroup = new GroupPanel.TogglePanel("base", "基本", baseGroupItems, true, false);
+        groups.add(baseGroup);
+
+        //FIXME
+        for(int i = 0; i < 8; i++) {
+            List<IconLabel> items = new ArrayList<>();
+            for(int j = 0; j < 5; j++){
+                items.add(new IconLabel(AllIcons.General.Settings, "code_" + i + "_" + j, "功能" + i, code -> {
+                    Messages.showMessageDialog(code,"Sample", Messages.getInformationIcon());
+                }));
+            }
+            groups.add(new GroupPanel.TogglePanel("base" + i, "功能组" + i, items , false, true));// FIXME
+        }
+
+        groupPanel = new GroupPanel(groups);
+
+        JScrollPane toolsPanel = new JBScrollPane(groupPanel);
+        toolsPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        toolsPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        toolsPanel.setPreferredSize(new Dimension(140, 0));
+
+        designWrapperPanel.add(toolsPanel, BorderLayout.WEST);
         tabbedPane.addTab("Flow Design", designWrapperPanel);
 
         JScrollPane codeWrapperPanel = new JBScrollPane(codeArea);

@@ -12,12 +12,14 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import org.fs.bsc.flow.editor.BscFlowEditor;
-import org.fs.bsc.flow.editor.model.BscFlow;
+import org.fs.bsc.flow.editor.command.AddActionCommand;
+import org.fs.bsc.flow.editor.command.CommandManager;
+import org.fs.bsc.flow.editor.model.*;
+import org.fs.bsc.flow.editor.support.XmlBscComponentTransformer;
 import org.fs.bsc.flow.editor.support.XmlBscFlowTransformer;
 import org.fs.bsc.flow.editor.ui.tools.GroupPanel;
 import org.fs.bsc.flow.editor.ui.tools.IconLabel;
@@ -26,12 +28,11 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvider {
 
@@ -51,11 +52,17 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
     private final BscFlow flow;
 
+    private final CommandManager commandManager;
+
+    private final Map<String, BscComponent> componentMap;
+
     public BscFlowEditorUI(BscFlowEditor editor, Project project, Module module, VirtualFile virtualFile) {
         this.project = project;
         this.module = module;
         this.file = virtualFile;
 
+        commandManager = new CommandManager();
+        componentMap = new HashMap<>();
         flowCodeField = new JTextField();
         flowCodeField.setEditable(false);
         flowNameField = new JTextField();
@@ -96,33 +103,11 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
         JPanel designWrapperPanel = new JPanel();
         designWrapperPanel.setLayout(new BorderLayout());
-        designPanel = new BscFlowDesignPanel();
+        designPanel = new BscFlowDesignPanel(this);
         designWrapperPanel.add(designPanel, BorderLayout.CENTER);
 
 
-        java.util.List<GroupPanel.TogglePanel> groups = new ArrayList<>();
-        List<IconLabel> baseGroupItems = new ArrayList<>();
-        baseGroupItems.add(new IconLabel(AllIcons.General.Mouse, "select", "选择", code -> {
-            Messages.showMessageDialog(code,"Sample", Messages.getInformationIcon());
-        }));
-        baseGroupItems.add(new IconLabel(AllIcons.General.Locate, "connect", "连接", code -> {
-            Messages.showMessageDialog(code,"Sample", Messages.getInformationIcon());
-        }));
-        GroupPanel.TogglePanel baseGroup = new GroupPanel.TogglePanel("base", "基本", baseGroupItems, true, false);
-        groups.add(baseGroup);
-
-        //FIXME
-        for(int i = 0; i < 8; i++) {
-            List<IconLabel> items = new ArrayList<>();
-            for(int j = 0; j < 5; j++){
-                items.add(new IconLabel(AllIcons.General.Settings, "code_" + i + "_" + j, "功能" + i, code -> {
-                    Messages.showMessageDialog(code,"Sample", Messages.getInformationIcon());
-                }));
-            }
-            groups.add(new GroupPanel.TogglePanel("base" + i, "功能组" + i, items , false, true));// FIXME
-        }
-
-        groupPanel = new GroupPanel(groups);
+        groupPanel = createGroupPanel();
 
         JScrollPane toolsPanel = new JBScrollPane(groupPanel);
         toolsPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -181,14 +166,8 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         }
     }
 
-    public void refreshAndSave() {
-        //TODO
-    }
-
     public void refresh() {
-        //TODO
         String content = document.getText();
-
         flowCodeField.setText(flow.getCode());
         flowNameField.setText(flow.getName());
         flowDescArea.setText(flow.getDesc());
@@ -211,5 +190,66 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
                 document.setText(newText);
             });
         }, "BSC Flow Save", new Object());
+    }
+
+    private GroupPanel createGroupPanel() {
+        IconLabel.ClickAction clickAction = code -> {
+            if ("select".equals(code)) {
+                //TODO
+            } else if ("connect".equals(code)) {
+                //TODO
+            } else if ("start".equals(code)) {
+                AddActionCommand command = new AddActionCommand();
+                command.setFlow(flow);
+                command.setAction(new BscFlowStartAction());
+                commandManager.setCurrentCommand(command);
+            } else if ("end".equals(code)) {
+                AddActionCommand command = new AddActionCommand();
+                command.setFlow(flow);
+                command.setAction(new BscFlowEndAction());
+                commandManager.setCurrentCommand(command);
+            } else {
+                AddActionCommand command = new AddActionCommand();
+                command.setFlow(flow);
+                BscFlowAction action = new BscFlowAction();
+                action.setComponentCode(code);
+                action.setName(componentMap.get(code).getName());
+                command.setAction(action);
+                commandManager.setCurrentCommand(command);
+            }
+        };
+        java.util.List<GroupPanel.TogglePanel> groups = new ArrayList<>();
+        List<IconLabel> baseGroupItems = new ArrayList<>();
+        baseGroupItems.add(new IconLabel(AllIcons.General.Mouse, "select", "Select", clickAction));
+        baseGroupItems.add(new IconLabel(AllIcons.General.Locate, "connect", "Connect", clickAction));
+        GroupPanel.TogglePanel baseGroup = new GroupPanel.TogglePanel("base", "base", baseGroupItems, true, false);
+        groups.add(baseGroup);
+
+        List<IconLabel> baseComponentGroupItems = new ArrayList<>();
+        baseComponentGroupItems.add(new IconLabel(AllIcons.Actions.Execute, "start", "Start Action", clickAction));
+        baseComponentGroupItems.add(new IconLabel(AllIcons.Actions.Suspend, "end", "End Action", clickAction));
+        baseComponentGroupItems.add(new IconLabel(AllIcons.Actions.Lightning, "call", "Call Action", clickAction));
+        GroupPanel.TogglePanel baseComponentGroup =
+                new GroupPanel.TogglePanel("baseComponent", "Base Components", baseComponentGroupItems, false, false);
+        groups.add(baseComponentGroup);
+
+        List<BscComponent> components;
+        try (InputStream in = new FileInputStream(new File(file.getParent().getPath() + File.separator + "bsc_components.xml"))) {
+            components = XmlBscComponentTransformer.toActionComponent(in);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+        List<IconLabel> items = new ArrayList<>();
+        for (BscComponent component : components) {
+            componentMap.put(component.getCode(), component);
+            items.add(new IconLabel(AllIcons.General.Settings, component.getCode(), component.getName(), clickAction));
+        }
+        groups.add(new GroupPanel.TogglePanel("extended", "Extended Components", items, false, false));
+
+        return new GroupPanel(groups);
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 }

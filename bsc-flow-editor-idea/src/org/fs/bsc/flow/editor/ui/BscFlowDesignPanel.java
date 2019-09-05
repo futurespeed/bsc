@@ -1,5 +1,7 @@
 package org.fs.bsc.flow.editor.ui;
 
+import org.fs.bsc.flow.editor.command.AddActionCommand;
+import org.fs.bsc.flow.editor.command.Command;
 import org.fs.bsc.flow.editor.model.BscFlow;
 import org.fs.bsc.flow.editor.model.BscFlowAction;
 import org.fs.bsc.flow.editor.model.BscFlowDirection;
@@ -10,6 +12,8 @@ import org.fs.bsc.flow.editor.ui.support.RectangleUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +25,33 @@ public class BscFlowDesignPanel extends JPanel {
 
     private Map<String, BscFlowActionPart> actionPartMap = new HashMap<>();
 
-    public BscFlowDesignPanel() {
+    private BscFlowEditorUI ui;
+
+    public BscFlowDesignPanel(BscFlowEditorUI ui) {
+        this.ui = ui;
         setLayout(null);
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Command command = ui.getCommandManager().getCurrentCommand();
+                if (null == command) {
+                    return;
+                }
+                if (command instanceof AddActionCommand) {
+                    AddActionCommand addActionCommand = (AddActionCommand) command;
+                    DisplayInfo displayInfo = new DisplayInfo();
+                    displayInfo.setWidth(80);
+                    displayInfo.setHeight(30);
+                    Point mousePos = MouseInfo.getPointerInfo().getLocation();
+                    Point panelPos = getLocationOnScreen();
+                    displayInfo.setX(mousePos.x - panelPos.x);
+                    displayInfo.setY(mousePos.y - panelPos.y);
+                    addActionCommand.getAction().setDisplay(displayInfo);
+                    ui.getCommandManager().execute(command);
+                    refresh();
+                }
+            }
+        });
     }
 
     public void refresh() {
@@ -84,13 +113,7 @@ public class BscFlowDesignPanel extends JPanel {
                 for (BscFlowDirection direction : directionList) {
                     BscFlowAction targetAction = direction.getTargetAction();
                     BscFlowActionPart targetPart = actionPartMap.get(targetAction.getCode());
-                    DisplayInfo targetActionDisplay = targetAction.getDisplay();
-
-                    Point to = new Point(targetActionDisplay.getX(), targetActionDisplay.getY());
                     Connector connector = new Connector();
-//                    connector.connect(part.getPosition(), to);
-//                    connector.connect(RectangleUtils.getConnectPoint(part.getPosition(), part.getSize(), to),
-//                            RectangleUtils.getConnectPoint(targetPart.getPosition(), targetPart.getSize(), part.getPosition()));
                     connector.connect(RectangleUtils.getMiddlePoint(part.getPosition(), part.getSize()),
                             RectangleUtils.getConnectPoint(targetPart.getPosition(), targetPart.getSize(), part.getPosition()));
                     add(connector);

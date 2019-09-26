@@ -8,9 +8,9 @@ import org.fs.bsc.flow.editor.model.BscFlowStartAction;
 import java.util.UUID;
 
 public class AddActionCommand implements Command {
-    protected BscFlowAction action;
+    private BscFlowAction action;
 
-    protected BscFlow flow;
+    private BscFlow flow;
 
     @Override
     public void execute() {

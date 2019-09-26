@@ -33,6 +33,7 @@ public class BscFlowDesignPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                ui.getSelectionManager().cleanSelection();
                 Command command = ui.getCommandManager().getCurrentCommand();
                 if (null == command) {
                     return;
@@ -134,5 +135,9 @@ public class BscFlowDesignPanel extends JPanel {
 
     public RectangleMovingShadow getMovingShadow() {
         return movingShadow;
+    }
+
+    public BscFlowEditorUI getUi() {
+        return ui;
     }
 }

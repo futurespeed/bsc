@@ -1,11 +1,13 @@
 package org.fs.bsc.flow.editor.ui.support;
 
+import org.fs.bsc.flow.editor.selection.Selectable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class EditableRectangle extends JPanel implements Drawable, Resizable {
+public class EditableRectangle extends JPanel implements Drawable, Resizable, Selectable {
 
     private Point position;
     private Point newPosition;
@@ -141,5 +143,17 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable {
 
     public Point getPosition() {
         return position;
+    }
+
+    @Override
+    public boolean selected() {
+        setBorder(BorderFactory.createDashedBorder(Color.BLACK, 1.5f, 3f, 3f, true));
+        return true;
+    }
+
+    @Override
+    public boolean deselected() {
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        return true;
     }
 }

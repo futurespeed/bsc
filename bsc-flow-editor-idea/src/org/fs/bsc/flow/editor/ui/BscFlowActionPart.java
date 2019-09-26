@@ -1,5 +1,7 @@
 package org.fs.bsc.flow.editor.ui;
 
+import org.fs.bsc.flow.editor.command.AddConnectionCommand;
+import org.fs.bsc.flow.editor.command.Command;
 import org.fs.bsc.flow.editor.model.BscFlowAction;
 import org.fs.bsc.flow.editor.ui.support.Connector;
 import org.fs.bsc.flow.editor.ui.support.EditableRectangle;
@@ -33,11 +35,29 @@ public class BscFlowActionPart extends EditableRectangle {
     public void drawStart(Point point) {
         super.drawStart(point);
         if (getParent() instanceof BscFlowDesignPanel) {
-            RectangleMovingShadow movingShadow = ((BscFlowDesignPanel) getParent()).getMovingShadow();
+            BscFlowDesignPanel designPanel = (BscFlowDesignPanel) getParent();
+
+            designPanel.getUi().getSelectionManager().selectOne(this);
+
+            RectangleMovingShadow movingShadow = designPanel.getMovingShadow();
             movingShadow.setSize(getSize());
             movingShadow.setLocation(getPosition());
             movingShadow.show();
             setVisible(false);
+
+            Command command = designPanel.getUi().getCommandManager().getCurrentCommand();
+            if (command != null) {
+                if (command instanceof AddConnectionCommand) {
+                    AddConnectionCommand addConnectionCommand = (AddConnectionCommand) command;
+                    if (null == addConnectionCommand.getSourceAction()) {
+                        addConnectionCommand.setSourceAction(getAction());
+                    } else if (null == addConnectionCommand.getTargetAction()) {
+                        addConnectionCommand.setTargetAction(getAction());
+                        addConnectionCommand.execute();
+                        designPanel.refresh();
+                    }
+                }
+            }
         }
     }
 

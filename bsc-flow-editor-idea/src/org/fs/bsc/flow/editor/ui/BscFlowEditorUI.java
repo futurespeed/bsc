@@ -17,8 +17,12 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import org.fs.bsc.flow.editor.BscFlowEditor;
 import org.fs.bsc.flow.editor.command.AddActionCommand;
+import org.fs.bsc.flow.editor.command.AddConnectionCommand;
 import org.fs.bsc.flow.editor.command.CommandManager;
+import org.fs.bsc.flow.editor.command.DeleteActionCommand;
 import org.fs.bsc.flow.editor.model.*;
+import org.fs.bsc.flow.editor.selection.Selectable;
+import org.fs.bsc.flow.editor.selection.SelectionManager;
 import org.fs.bsc.flow.editor.support.XmlBscComponentTransformer;
 import org.fs.bsc.flow.editor.support.XmlBscFlowTransformer;
 import org.fs.bsc.flow.editor.ui.tools.GroupPanel;
@@ -54,6 +58,8 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
     private final CommandManager commandManager;
 
+    private final SelectionManager selectionManager;
+
     private final Map<String, BscComponent> componentMap;
 
     public BscFlowEditorUI(BscFlowEditor editor, Project project, Module module, VirtualFile virtualFile) {
@@ -62,6 +68,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         this.file = virtualFile;
 
         commandManager = new CommandManager();
+        selectionManager = new SelectionManager();
         componentMap = new HashMap<>();
         flowCodeField = new JTextField();
         flowCodeField.setEditable(false);
@@ -131,7 +138,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         document.addDocumentListener(new DocumentListener() {
             @Override
             public void documentChanged(@NotNull DocumentEvent event) {
-                refresh();
+//                refresh();
             }
         });
 
@@ -195,18 +202,46 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
     private GroupPanel createGroupPanel() {
         IconLabel.ClickAction clickAction = code -> {
             if ("select".equals(code)) {
-                //TODO
+                commandManager.setCurrentCommand(null);
+                selectionManager.cleanSelection();
             } else if ("connect".equals(code)) {
-                //TODO
+                AddConnectionCommand command = new AddConnectionCommand();
+                command.setFlow(flow);
+                commandManager.setCurrentCommand(command);
+            } else if ("delete".equals(code)) {
+                if(selectionManager.hasSelection()) {
+                    for(Selectable selectable : selectionManager.getSelections()) {
+                        if(selectable instanceof BscFlowActionPart) {
+                            BscFlowActionPart part = (BscFlowActionPart) selectable;
+                            DeleteActionCommand command = new DeleteActionCommand();
+                            command.setAction(part.getAction());
+                            command.setFlow(flow);
+                            command.execute();
+                        }
+                    }
+                    refresh();
+                }
             } else if ("start".equals(code)) {
                 AddActionCommand command = new AddActionCommand();
                 command.setFlow(flow);
-                command.setAction(new BscFlowStartAction());
+                BscFlowAction action = new BscFlowStartAction();
+                command.setAction(action);
+                action.setComponentCode(code);
                 commandManager.setCurrentCommand(command);
             } else if ("end".equals(code)) {
                 AddActionCommand command = new AddActionCommand();
                 command.setFlow(flow);
-                command.setAction(new BscFlowEndAction());
+                BscFlowAction action = new BscFlowEndAction();
+                action.setComponentCode(code);
+                command.setAction(action);
+                commandManager.setCurrentCommand(command);
+            } else if ("call".equals(code)) {
+                AddActionCommand command = new AddActionCommand();
+                command.setFlow(flow);
+                BscFlowAction action = new BscFlowAction();
+                action.setComponentCode(BscFlowAction.ACTION_TYPE_CALL);
+                action.setName("Call Action");
+                command.setAction(action);
                 commandManager.setCurrentCommand(command);
             } else {
                 AddActionCommand command = new AddActionCommand();
@@ -222,6 +257,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         List<IconLabel> baseGroupItems = new ArrayList<>();
         baseGroupItems.add(new IconLabel(AllIcons.General.Mouse, "select", "Select", clickAction));
         baseGroupItems.add(new IconLabel(AllIcons.General.Locate, "connect", "Connect", clickAction));
+        baseGroupItems.add(new IconLabel(AllIcons.General.Remove, "delete", "Delete", clickAction));
         GroupPanel.TogglePanel baseGroup = new GroupPanel.TogglePanel("base", "base", baseGroupItems, true, false);
         groups.add(baseGroup);
 
@@ -251,5 +287,9 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public SelectionManager getSelectionManager() {
+        return selectionManager;
     }
 }

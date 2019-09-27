@@ -50,6 +50,7 @@ public class BscFlowDesignPanel extends JPanel {
                     addActionCommand.getAction().setDisplay(displayInfo);
                     ui.getCommandManager().execute(command);
                     refresh();
+                    ui.save();
                 }
             }
         });

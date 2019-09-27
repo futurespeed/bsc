@@ -220,6 +220,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
                         }
                     }
                     refresh();
+                    save();
                 }
             } else if ("start".equals(code)) {
                 AddActionCommand command = new AddActionCommand();

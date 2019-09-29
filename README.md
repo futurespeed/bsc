@@ -4,7 +4,7 @@ BSC is a processing framework for business service.
 
 Inputs were put in to a context. BSC processed the context. After that we can get outputs from the context.
 
-![bsc-process](bsc-process.png)
+![bsc-process.png](bsc-process.png)
 
 ## BSC Flow
 
@@ -21,6 +21,8 @@ About Flow Model, we need to know these concepts.
 Flow Editors are available now.
 * [Flow Editor for Eclipse](bsc-flow-editor-eclipse/org.fs.bsc.flow.editor.BSCFlowEditor_1.0.0.201908011110.jar)
 * [Flow Editor for IntelliJ IDEA (Preview)](bsc-flow-editor-idea/bsc-flow-editor-idea.jar)
+
+![flow-editor-idea.png](flow-editor-idea.png)
 
 ### Default Starter
 example:

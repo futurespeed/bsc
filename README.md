@@ -15,8 +15,8 @@ It contains Flow Model, Flow Editor and Flow Execution.
 About Flow Model, we need to know these concepts.
 * Flow Action - Every process can be an Action.
 * Flow Direction - A connection that leads to another Action.
-* Flow Definition - A definition that describes how a Flow runs.
-* Flow Instance - An instance which a Flow runs.
+* Flow Definition - A definition that describes how the Flow runs.
+* Flow Instance - An instance which the Flow runs.
 
 Flow Editors are available now.
 * [Flow Editor for Eclipse](bsc-flow-editor-eclipse/org.fs.bsc.flow.editor.BSCFlowEditor_1.0.0.201908011110.jar)

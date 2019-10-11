@@ -192,6 +192,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
                 } catch (UnsupportedEncodingException e) {
                     throw new IllegalArgumentException(e);
                 }
+                codeArea.setText(newText);
                 document.setText(newText);
             });
         }, "BSC Flow Save", new Object());

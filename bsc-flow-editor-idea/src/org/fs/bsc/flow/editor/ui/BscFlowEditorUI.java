@@ -16,15 +16,13 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import org.fs.bsc.flow.editor.BscFlowEditor;
-import org.fs.bsc.flow.editor.command.AddActionCommand;
-import org.fs.bsc.flow.editor.command.AddConnectionCommand;
-import org.fs.bsc.flow.editor.command.CommandManager;
-import org.fs.bsc.flow.editor.command.DeleteActionCommand;
+import org.fs.bsc.flow.editor.command.*;
 import org.fs.bsc.flow.editor.model.*;
 import org.fs.bsc.flow.editor.selection.Selectable;
 import org.fs.bsc.flow.editor.selection.SelectionManager;
 import org.fs.bsc.flow.editor.support.XmlBscComponentTransformer;
 import org.fs.bsc.flow.editor.support.XmlBscFlowTransformer;
+import org.fs.bsc.flow.editor.ui.support.Connector;
 import org.fs.bsc.flow.editor.ui.tools.GroupPanel;
 import org.fs.bsc.flow.editor.ui.tools.IconLabel;
 import org.jetbrains.annotations.NotNull;
@@ -216,7 +214,12 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
                             DeleteActionCommand command = new DeleteActionCommand();
                             command.setAction(part.getAction());
                             command.setFlow(flow);
-                            command.execute();
+                            commandManager.execute(command);
+                        } else if(selectable instanceof BscFlowDirectionPart) {
+                            BscFlowDirectionPart part = (BscFlowDirectionPart) selectable;
+                            DeleteConnectionCommand command = new DeleteConnectionCommand();
+                            command.setDirection(part.getDirection());
+                            commandManager.execute(command);
                         }
                     }
                     refresh();

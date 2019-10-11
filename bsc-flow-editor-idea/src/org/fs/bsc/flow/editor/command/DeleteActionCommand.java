@@ -12,8 +12,16 @@ public class DeleteActionCommand implements Command {
 
     private List<BscFlowDirection> sourceDirections;
 
+    private List<BscFlowDirection> directions;
+
     @Override
     public void execute() {
+        directions = action.getDirections();
+        if (directions != null) {
+            for (BscFlowDirection direction : directions) {
+                direction.getTargetAction().getSourceDirections().remove(direction);
+            }
+        }
         if (action instanceof BscFlowStartAction) {
             flow.setStartAction(null);
         } else if (action instanceof BscFlowEndAction) {
@@ -37,6 +45,11 @@ public class DeleteActionCommand implements Command {
 
     @Override
     public void undo() {
+        if (directions != null) {
+            for (BscFlowDirection direction : directions) {
+                direction.getTargetAction().getSourceDirections().add(direction);
+            }
+        }
         if (action instanceof BscFlowStartAction) {
             flow.setStartAction((BscFlowStartAction) action);
         } else if (action instanceof BscFlowEndAction) {

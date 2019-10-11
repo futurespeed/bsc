@@ -115,10 +115,11 @@ public class BscFlowDesignPanel extends JPanel {
                 for (BscFlowDirection direction : directionList) {
                     BscFlowAction targetAction = direction.getTargetAction();
                     BscFlowActionPart targetPart = actionPartMap.get(targetAction.getCode());
-                    Connector connector = new Connector();
+                    BscFlowDirectionPart connector = new BscFlowDirectionPart();
+                    connector.setDirection(direction);
+                    add(connector);
                     connector.connect(RectangleUtils.getMiddlePoint(part.getPosition(), part.getSize()),
                             RectangleUtils.getConnectPoint(targetPart.getPosition(), targetPart.getSize(), part.getPosition()));
-                    add(connector);
                     part.addTargetConnector(connector);
                     targetPart.addSourceConnector(connector);
                 }

@@ -1,11 +1,16 @@
 package org.fs.bsc.flow.editor.ui.support;
 
+import org.fs.bsc.flow.editor.selection.Selectable;
+import org.fs.bsc.flow.editor.ui.BscFlowDesignPanel;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Connector extends JPanel {
+public class Connector extends JPanel implements Selectable {
 
     private Point start;
     private Point end;
@@ -18,6 +23,7 @@ public class Connector extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        g.clearRect(getX(), getY(), getWidth(), getHeight());
         super.paintComponent(g);
         g.setColor(lineColor);
         g.drawLine(start.x - getX(), start.y - getY(), end.x - getX(), end.y - getY());
@@ -52,6 +58,7 @@ public class Connector extends JPanel {
         setLocation(Math.min(start.x, end.x) - arrowSize, Math.min(start.y, end.y) - arrowSize);
         setSize(Math.abs(start.x - end.x) + arrowSize * 2, Math.abs(start.y - end.y) + arrowSize * 2);
         repaint();
+        repaintParent();
     }
 
     public Point getStart() {
@@ -60,6 +67,29 @@ public class Connector extends JPanel {
 
     public Point getEnd() {
         return end;
+    }
+
+    @Override
+    public boolean selected() {
+        lineColor = Color.PINK;
+        repaint();
+        repaintParent();
+        return true;
+    }
+
+    @Override
+    public boolean deselected() {
+        lineColor = Color.BLACK;
+        repaint();
+        repaintParent();
+        return true;
+    }
+
+    protected void repaintParent(){
+        if(null == getParent()) {
+            return;
+        }
+        getParent().repaint();
     }
 
     public static class Arrow {

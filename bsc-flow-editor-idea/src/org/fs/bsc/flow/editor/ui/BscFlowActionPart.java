@@ -53,7 +53,7 @@ public class BscFlowActionPart extends EditableRectangle {
                         addConnectionCommand.setSourceAction(getAction());
                     } else if (null == addConnectionCommand.getTargetAction()) {
                         addConnectionCommand.setTargetAction(getAction());
-                        addConnectionCommand.execute();
+                        designPanel.getUi().getCommandManager().execute(addConnectionCommand);
                         designPanel.refresh();
                     }
                 }

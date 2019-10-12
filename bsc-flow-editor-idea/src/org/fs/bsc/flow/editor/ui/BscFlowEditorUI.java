@@ -22,7 +22,6 @@ import org.fs.bsc.flow.editor.selection.Selectable;
 import org.fs.bsc.flow.editor.selection.SelectionManager;
 import org.fs.bsc.flow.editor.support.XmlBscComponentTransformer;
 import org.fs.bsc.flow.editor.support.XmlBscFlowTransformer;
-import org.fs.bsc.flow.editor.ui.support.Connector;
 import org.fs.bsc.flow.editor.ui.tools.GroupPanel;
 import org.fs.bsc.flow.editor.ui.tools.IconLabel;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +50,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
     private final JTextArea codeArea;
     private final BscFlowDesignPanel designPanel;
     private final GroupPanel groupPanel;
+    private final ParamPanel paramPanel;
 
     private final BscFlow flow;
 
@@ -104,7 +104,12 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         JPanel infoWrapperPanel = new JPanel(new BorderLayout());
         infoWrapperPanel.add(infoPanel, BorderLayout.CENTER);
         tabbedPane.addTab("Information", infoWrapperPanel);
-        tabbedPane.addTab("Parameters", new JPanel());
+
+        paramPanel = new ParamPanel(this);
+        JScrollPane paramScrollPane = new JBScrollPane(paramPanel);
+        paramScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        paramScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        tabbedPane.addTab("Parameters", paramScrollPane);
 
         JPanel designWrapperPanel = new JPanel();
         designWrapperPanel.setLayout(new BorderLayout());
@@ -142,6 +147,7 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
         this.flow = readFlow(this.document);
         designPanel.setFlow(this.flow);
+        paramPanel.init();
 
         refresh();
     }
@@ -208,15 +214,15 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
                 command.setFlow(flow);
                 commandManager.setCurrentCommand(command);
             } else if ("delete".equals(code)) {
-                if(selectionManager.hasSelection()) {
-                    for(Selectable selectable : selectionManager.getSelections()) {
-                        if(selectable instanceof BscFlowActionPart) {
+                if (selectionManager.hasSelection()) {
+                    for (Selectable selectable : selectionManager.getSelections()) {
+                        if (selectable instanceof BscFlowActionPart) {
                             BscFlowActionPart part = (BscFlowActionPart) selectable;
                             DeleteActionCommand command = new DeleteActionCommand();
                             command.setAction(part.getAction());
                             command.setFlow(flow);
                             commandManager.execute(command);
-                        } else if(selectable instanceof BscFlowDirectionPart) {
+                        } else if (selectable instanceof BscFlowDirectionPart) {
                             BscFlowDirectionPart part = (BscFlowDirectionPart) selectable;
                             DeleteConnectionCommand command = new DeleteConnectionCommand();
                             command.setDirection(part.getDirection());
@@ -296,5 +302,9 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
     public SelectionManager getSelectionManager() {
         return selectionManager;
+    }
+
+    public BscFlow getFlow() {
+        return flow;
     }
 }

@@ -20,6 +20,8 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable, Se
 
     private boolean enableResize;
 
+    private long lastClickTimestamp;
+
     public EditableRectangle(Point position, Dimension size, boolean enableResize) {
         this.position = position;
         this.size = size;
@@ -28,6 +30,7 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable, Se
     }
 
     protected void init() {
+        EditableRectangle that = this;
         setLocation(position);
         setSize(size);
         setCursor(new Cursor(Cursor.MOVE_CURSOR));
@@ -48,6 +51,17 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable, Se
                     hover = false;
                     repaint();
                 }
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                long currTimeStamp = System.currentTimeMillis();
+                if(currTimeStamp - lastClickTimestamp < 500){
+                    that.mouseDoubleClicked();
+                }else {
+                    that.mouseClicked();
+                }
+                lastClickTimestamp = currTimeStamp;
             }
 
             @Override
@@ -92,6 +106,14 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable, Se
             g.drawLine(size.width / 2 - 1, i, size.width / 2 + 2, i);//middle-top
             g.drawLine(size.width / 2 - 1, size.height - (i + 1), size.width / 2 + 2, size.height - (i + 1));//middle-bottom
         }
+    }
+
+    protected void mouseClicked(){
+        // do something
+    }
+
+    protected void mouseDoubleClicked(){
+        // do something
     }
 
     @Override

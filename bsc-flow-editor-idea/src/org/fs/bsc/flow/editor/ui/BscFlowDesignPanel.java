@@ -73,7 +73,7 @@ public class BscFlowDesignPanel extends JPanel {
             if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
             }
-            BscFlowActionPart actionPart = new BscFlowActionPart("Start",
+            BscFlowActionPart actionPart = new BscFlowActionPart(ui, "Start",
                     new Point(action.getDisplay().getX(), action.getDisplay().getY()),
                     new Dimension(action.getDisplay().getWidth(), action.getDisplay().getHeight()));
             actionPart.setAction(action);
@@ -86,7 +86,7 @@ public class BscFlowDesignPanel extends JPanel {
             if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
             }
-            BscFlowActionPart actionPart = new BscFlowActionPart(action.getName(),
+            BscFlowActionPart actionPart = new BscFlowActionPart(ui, action.getName(),
                     new Point(action.getDisplay().getX(), action.getDisplay().getY()),
                     new Dimension(action.getDisplay().getWidth(), action.getDisplay().getHeight()));
             actionPart.setAction(action);
@@ -99,7 +99,7 @@ public class BscFlowDesignPanel extends JPanel {
             if (null == action.getDisplay()) {
                 action.setDisplay(defaultDisplayInfo);
             }
-            BscFlowActionPart actionPart = new BscFlowActionPart("End",
+            BscFlowActionPart actionPart = new BscFlowActionPart(ui, "End",
                     new Point(action.getDisplay().getX(), action.getDisplay().getY()),
                     new Dimension(action.getDisplay().getWidth(), action.getDisplay().getHeight()));
             actionPart.setAction(action);

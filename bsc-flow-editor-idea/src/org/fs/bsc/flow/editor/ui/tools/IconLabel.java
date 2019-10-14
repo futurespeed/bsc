@@ -1,6 +1,7 @@
 package org.fs.bsc.flow.editor.ui.tools;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,6 +20,7 @@ public class IconLabel extends JLabel {
     }
 
     protected void init(){
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
         setIcon(icon);
         setText(text);
         setToolTipText(text);

@@ -28,7 +28,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,9 +74,61 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
         flowCodeField = new JTextField();
         flowCodeField.setEditable(false);
         flowNameField = new JTextField();
+        flowNameField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void docChange(javax.swing.event.DocumentEvent e){
+                javax.swing.text.Document document = e.getDocument();
+                try {
+                    flow.setName(document.getText(0, document.getLength()));
+                    save();
+                } catch (BadLocationException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+        });
         flowDescArea = new JTextArea();
         flowDescArea.setLineWrap(true);
         flowDescArea.setRows(100);
+        flowDescArea.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void docChange(javax.swing.event.DocumentEvent e){
+                javax.swing.text.Document document = e.getDocument();
+                try {
+                    flow.setDesc(document.getText(0, document.getLength()));
+                    save();
+                } catch (BadLocationException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+        });
 
         codeArea = new JTextArea();
         codeArea.setEditable(false);
@@ -306,5 +361,13 @@ public class BscFlowEditorUI extends JPanel implements DataProvider, ModuleProvi
 
     public BscFlow getFlow() {
         return flow;
+    }
+
+    public BscFlowDesignPanel getDesignPanel() {
+        return designPanel;
+    }
+
+    public BscComponent getBscComponent(String code){
+        return componentMap.get(code);
     }
 }

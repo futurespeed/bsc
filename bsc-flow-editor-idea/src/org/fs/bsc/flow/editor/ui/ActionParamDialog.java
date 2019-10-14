@@ -7,6 +7,7 @@ import org.fs.bsc.flow.editor.model.BscFlowAction;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class ActionParamDialog extends JDialog {
     private BscFlowAction action;
 
     private JTable paramTable;
+
+    private JTextField nameField;
 
     public ActionParamDialog(BscFlowEditorUI ui, BscComponent component, BscFlowAction action) {
         super((Frame) null, true);
@@ -55,6 +58,44 @@ public class ActionParamDialog extends JDialog {
             ui.save();
         });
         paramTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
+
+        JLabel nameLabel = new JLabel("Action Name");
+        nameField = new JTextField();
+        nameField.setText(action.getName());
+        nameField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void docChange(javax.swing.event.DocumentEvent e){
+                javax.swing.text.Document document = e.getDocument();
+                try {
+                    action.setName(document.getText(0, document.getLength()));
+                    ui.getDesignPanel().getActionPart(action.getCode()).repaint();
+                    ui.save();
+                } catch (BadLocationException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                docChange(e);
+            }
+        });
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
+        namePanel.add(nameLabel);
+        namePanel.add(nameField);
+
+        add(namePanel);
+        add(new JLabel(" "));
         add(paramTable.getTableHeader());
         add(paramTable);
     }

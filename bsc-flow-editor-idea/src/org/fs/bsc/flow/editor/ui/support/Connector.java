@@ -1,12 +1,9 @@
 package org.fs.bsc.flow.editor.ui.support;
 
 import org.fs.bsc.flow.editor.selection.Selectable;
-import org.fs.bsc.flow.editor.ui.BscFlowDesignPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +13,14 @@ public class Connector extends JPanel implements Selectable {
     private Point end;
     private Color lineColor = Color.BLACK;
     private int arrowSize = 6;
+    private String description;
 
     public Connector() {
+        this(null);
+    }
+
+    public Connector(String description) {
+        this.description = description;
         setBackground(new Color(0, 0, 0, 0));
     }
 
@@ -50,6 +53,11 @@ public class Connector extends JPanel implements Selectable {
         Point p2 = points.get(2);
         Polygon arrowPolygon = new Polygon(new int[]{p0.x, p1.x, p2.x}, new int[]{p0.y, p1.y, p2.y}, 3);
         g.fillPolygon(arrowPolygon);
+
+        // description
+        if (description != null && description.length() > 0) {
+            g.drawString(description, getWidth() / 2 + 5, getHeight() / 2 - 5);
+        }
     }
 
     public void connect(Point start, Point end) {
@@ -59,6 +67,14 @@ public class Connector extends JPanel implements Selectable {
         setSize(Math.abs(start.x - end.x) + arrowSize * 2, Math.abs(start.y - end.y) + arrowSize * 2);
         repaint();
         repaintParent();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Point getStart() {
@@ -85,8 +101,8 @@ public class Connector extends JPanel implements Selectable {
         return true;
     }
 
-    protected void repaintParent(){
-        if(null == getParent()) {
+    protected void repaintParent() {
+        if (null == getParent()) {
             return;
         }
         getParent().repaint();

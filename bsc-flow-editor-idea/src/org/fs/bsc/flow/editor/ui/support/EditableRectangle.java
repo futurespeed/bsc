@@ -16,6 +16,7 @@ public class EditableRectangle extends JPanel implements Drawable, Resizable, Se
     private Dimension size;
 
     private boolean drawing;
+
     private boolean hover;
 
     private boolean enableResize;

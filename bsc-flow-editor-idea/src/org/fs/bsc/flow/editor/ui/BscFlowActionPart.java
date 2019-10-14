@@ -39,6 +39,20 @@ public class BscFlowActionPart extends EditableRectangle {
     }
 
     @Override
+    protected void paintComponent(Graphics g) {
+        String actionName;
+        if (action instanceof BscFlowStartAction) {
+            actionName = "Start";
+        } else if (action instanceof BscFlowEndAction) {
+            actionName = "End";
+        } else {
+            actionName = action.getName();
+        }
+        nameLabel.setText(actionName);
+        super.paintComponent(g);
+    }
+
+    @Override
     protected void mouseClicked() {
         if (getParent() instanceof BscFlowDesignPanel) {
             BscFlowDesignPanel designPanel = (BscFlowDesignPanel) getParent();
@@ -65,12 +79,12 @@ public class BscFlowActionPart extends EditableRectangle {
 
     @Override
     protected void mouseDoubleClicked() {
-        if(this.getAction() instanceof BscFlowStartAction ||
-                this.getAction() instanceof BscFlowEndAction){
+        if (this.getAction() instanceof BscFlowStartAction ||
+                this.getAction() instanceof BscFlowEndAction) {
             return;
         }
         BscComponent bscComponent = ui.getBscComponent(action.getComponentCode());
-        if(null == bscComponent){
+        if (null == bscComponent) {
             Messages.showErrorDialog("Can not find component [" + action.getComponentCode() + "]", "Error");
             return;
         }

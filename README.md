@@ -2,7 +2,7 @@
 
 BSC is a processing framework for business service.
 
-Inputs were put into a context. BSC processed the context. After that we can get outputs from the context.
+The Inputs were put into a context. BSC processed the context. After that we can get outputs from the context.
 
 ![bsc-process.png](bsc-process.png)
 
